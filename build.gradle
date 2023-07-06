@@ -1,0 +1,58 @@
+plugins {
+	id 'java-library'
+	id 'org.springframework.boot' version '3.1.0' apply false
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'maven-publish'
+}
+
+group = 'com.stefanusong'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencyManagement {
+	imports {
+		mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+	}
+}
+
+publishing {
+	repositories {
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/stefanusong/anypay")
+			credentials {
+				username = project.findProperty("user") ?: System.getenv("USERNAME")
+				password = project.findProperty("token") ?: System.getenv("TOKEN")
+			}
+		}
+	}
+	publications {
+		gpr(MavenPublication) {
+			from(components.java)
+		}
+	}
+}
+
+dependencies {
+	api 'org.springframework.boot:spring-boot-starter-web:3.1.0'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'com.midtrans:java-library:3.1.4'
+	implementation 'com.xendit:xendit-java-lib:1.23.0'
+	implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.31'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
